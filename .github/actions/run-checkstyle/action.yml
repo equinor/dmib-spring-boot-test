@@ -12,7 +12,7 @@ runs:
         curl -O https://raw.githubusercontent.com/equinor/oilmod1-code-style/main/java/checkstyle/oilmod-checkstyle-xpath-suppressions.xml
 
     - name: Run Checkstyle and report
-      uses: equinor/action-checkstyle@974d1473b14ff34c8c2f410a7dbce2d0cd0e3ea9 # v1.19.0
+      uses: equinor/action-checkstyle@103e2e3ac7640d2b3de3df9b598744190cfec7df # v1.22.0
       with:
         # reports as pr check comment
         reporter: github-pr-check
