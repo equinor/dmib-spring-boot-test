@@ -1,0 +1,22 @@
+name: 'Checkstyle'
+description: 'Run code style checks'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Fetch remote Checkstyle config
+      shell: bash
+      run: |
+        curl -O https://raw.githubusercontent.com/equinor/oilmod1-code-style/main/java/checkstyle/oilmod-checkstyle.xml
+        curl -O https://raw.githubusercontent.com/equinor/oilmod1-code-style/main/java/checkstyle/oilmod-checkstyle-suppressions.xml
+        curl -O https://raw.githubusercontent.com/equinor/oilmod1-code-style/main/java/checkstyle/oilmod-checkstyle-xpath-suppressions.xml
+
+    - name: Run Checkstyle and report
+      uses: equinor/action-checkstyle@974d1473b14ff34c8c2f410a7dbce2d0cd0e3ea9 # v1.19.0
+      with:
+        # reports as pr check comment
+        reporter: github-pr-check
+        # defines reporter level - [info, warning, error], it won't become failure with 'warning'.
+        level: error
+        # defines checkstyle config file with a ruleset
+        checkstyle_config: "./oilmod-checkstyle.xml"

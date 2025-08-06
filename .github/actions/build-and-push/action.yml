@@ -1,0 +1,121 @@
+name: 'Build and push'
+description: 'Builds the app and pushes it to Azure Container Registry'
+
+inputs:
+  AZURE_TENANT_ID:
+    description: 'Tenant ID used for OIDC authentication'
+    required: true
+  AZURE_SUBSCRIPTION_ID:
+    description: 'Subscription ID used for OIDC authentication'
+    required: true
+  AZURE_CLIENT_ID:
+    description: 'Client ID used for OIDC authentication'
+    required: true
+  AZURE_CONTAINER_REGISTRY:
+    description: 'Container registry name'
+    required: true
+  AZURE_CONTAINER_REGISTRY_REPO:
+    description: 'Container registry repository name'
+    required: true
+  DYNATRACE_URL:
+    description: 'URL to the Dynatrace docker registry'
+    required: true
+  DYNATRACE_TENANT:
+    description: 'Dynatrace tenant UUID (preprod or prod)'
+    required: true
+  DYNATRACE_PAAS_TOKEN:
+    description: 'Authentication token used to log into Dynatrace docker registry and fetch agent image'
+    required: true
+  PUSH:
+    description: 'Push to registry or only build'
+    required: false
+    default: 'true'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set env vars based on inputs
+      shell: bash
+      run: |
+        if [[ ${{ inputs.PUSH == 'true' }} == true ]]; then
+          echo "Dry run mode is off, pushing to registry at the end of build."
+          image_tag=${{ inputs.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ inputs.AZURE_CONTAINER_REGISTRY_REPO }}:${{ github.sha }}
+        else 
+          echo "Running build in dry run mode, - no push to registry."
+          image_tag=pricing/app:verify
+        fi
+
+        echo "image_tag=$image_tag" >> $GITHUB_OUTPUT
+      id: set-env-vars
+
+    # login to Dynatrace (Kanari) owned docker registry
+    # to be able to pull the agent image
+    - name: Login to Dynatrace docker registry
+      shell: bash
+      run: |
+        echo "${{ inputs.DYNATRACE_PAAS_TOKEN }}" | docker login ${{ inputs.DYNATRACE_URL }} -u "${{ inputs.DYNATRACE_TENANT }}" --password-stdin
+
+    # get Dynatrace tenant token
+    - name: Get Dynatrace tenant token
+      shell: bash
+      run: |
+        tenant_token=$(curl -X GET "https://${{ inputs.DYNATRACE_URL }}/e/${{ inputs.DYNATRACE_TENANT }}/api/v1/deployment/installer/agent/connectioninfo" -H "accept: application/json" -H "Authorization: Api-Token ${{ inputs.DYNATRACE_PAAS_TOKEN }}" | grep "tenantToken" | cut -c 20-  | sed 's/.$//' | sed 's/.$//')
+        echo "::add-mask::$tenant_token"
+        echo "DYNATRACE_TENANT_TOKEN=$tenant_token" >> $GITHUB_OUTPUT
+      id: dynatrace
+
+    # login to Azure using OIDC (to be able to later login to container registry)
+    - name: Login to Azure using OIDC
+      uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
+      if: ${{ inputs.PUSH == 'true' }} # run only if push to ACR needed
+      with:
+        tenant-id: ${{ inputs.AZURE_TENANT_ID }}
+        subscription-id: ${{ inputs.AZURE_SUBSCRIPTION_ID }}
+        client-id: ${{ inputs.AZURE_CLIENT_ID }}
+
+    # login to Azure container registry
+    # to be able to push image
+    - name: Login to Azure container registry
+      shell: bash
+      if: ${{ inputs.PUSH == 'true' }} # run only if push to ACR needed
+      run: |
+        function fail {
+          echo $1 >&2
+          exit 1
+        }
+        function retry {
+          local n=1
+          local max=30
+          local delay=15
+          echo "Attempt $n/$max:"
+          while true; do
+            "$@" && break || {
+              if [[ $n -lt $max ]]; then
+                ((n++))
+                echo "Command failed. Attempt $n/$max:"
+                sleep $delay;
+              else
+                fail "The command has failed after $n attempts."
+              fi
+            }
+          done
+        }
+        retry az acr login --name ${{ inputs.AZURE_CONTAINER_REGISTRY }}
+
+    - name: Set up Buildx
+      uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
+
+    # build and push the Docker image
+    - name: Build and push
+      uses: docker/build-push-action@1dc73863535b631f98b2378be8619f83b136f4a0 # v6.17.0
+      with:
+        context: .
+        file: ./Dockerfile
+        push: ${{ inputs.PUSH }}
+        tags: ${{ steps.set-env-vars.outputs.image_tag }}
+        build-args: |
+          DYNATRACE_URL=${{ inputs.DYNATRACE_URL }}
+          DYNATRACE_TENANT=${{ inputs.DYNATRACE_TENANT }}
+          DYNATRACE_TENANT_TOKEN=${{ steps.dynatrace.outputs.DYNATRACE_TENANT_TOKEN }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

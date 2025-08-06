@@ -1,0 +1,17 @@
+name: 'Find version'
+description: 'Find upcoming release version based on latest git commits'
+
+outputs:
+  version:
+    description: 'Upcoming release version'
+    value: ${{ steps.find-version.outputs.version }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Find Version
+      id: find-version
+      shell: bash
+      run: |
+        chmod +x $GITHUB_WORKSPACE/.github/actions/release-find-version/scripts/find-version.sh
+        $GITHUB_WORKSPACE/.github/actions/release-find-version/scripts/find-version.sh

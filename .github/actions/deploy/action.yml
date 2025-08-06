@@ -1,0 +1,45 @@
+name: 'Deploy'
+description: 'Deploy to Azure Container App'
+
+inputs:
+  AZURE_TENANT_ID:
+    description: 'Tenant ID used for OIDC authentication'
+    required: true
+  AZURE_SUBSCRIPTION_ID:
+    description: 'Subscription ID used for OIDC authentication'
+    required: true
+  AZURE_CLIENT_ID:
+    description: 'Client ID used for OIDC authentication'
+    required: true
+  AZURE_RESOURCE_GROUP:
+    description: 'Resource group name'
+    required: true
+  AZURE_CONTAINER_REGISTRY:
+    description: 'Container registry name'
+    required: true
+  AZURE_CONTAINER_REGISTRY_REPO:
+    description: 'Container registry repository name'
+    required: true
+  AZURE_CONTAINER_APP:
+    description: 'Container app name'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    # login to Azure using OIDC (to be able to later login to container registry)
+    - name: Login to Azure using OIDC
+      uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
+      with:
+        tenant-id: ${{ inputs.AZURE_TENANT_ID }}
+        subscription-id: ${{ inputs.AZURE_SUBSCRIPTION_ID }}
+        client-id: ${{ inputs.AZURE_CLIENT_ID }}
+
+    # deploy container app from container registry
+    - name: Deploy container app from container registry
+      uses: azure/container-apps-deploy-action@5f5f4c56ca90376e3cfbd76ba8fe8533c784e655 # v2
+      with:
+        imageToDeploy: ${{ inputs.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ inputs.AZURE_CONTAINER_REGISTRY_REPO }}:${{ github.sha }}
+        acrName: ${{ inputs.AZURE_CONTAINER_REGISTRY }}
+        containerAppName: ${{ inputs.AZURE_CONTAINER_APP }}
+        resourceGroup: ${{ inputs.AZURE_RESOURCE_GROUP }}

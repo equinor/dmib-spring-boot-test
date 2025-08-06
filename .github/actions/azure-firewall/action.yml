@@ -1,0 +1,76 @@
+name: 'Adjust firewall'
+description: 'Open or close firewall for GitHub action runner IP in Azure Container Registry'
+
+inputs:
+  ACTION:
+    description: 'Whether to open or close the firewall' # either 'open' or 'close' as input
+    required: true
+  AZURE_TENANT_ID:
+    description: 'Tenant ID used for OIDC authentication'
+    required: true
+  AZURE_SUBSCRIPTION_ID:
+    description: 'Subscription ID used for OIDC authentication'
+    required: true
+  AZURE_CLIENT_ID:
+    description: 'Client ID used for OIDC authentication'
+    required: true
+  AZURE_RESOURCE_GROUP:
+    description: 'Resource group name'
+    required: true
+  AZURE_CONTAINER_REGISTRY:
+    description: 'Container registry name'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Debugging - Output variables for fw script
+      shell: bash
+      run: |
+        echo "Azure Tenant ID: '${{ inputs.AZURE_TENANT_ID }}'"
+        echo "Azure Subscription ID: '${{ inputs.AZURE_SUBSCRIPTION_ID }}'"
+        echo "Azure Client ID: '${{ inputs.AZURE_CLIENT_ID }}'"
+        echo "Azure Resource Group: '${{ inputs.AZURE_RESOURCE_GROUP }}'"
+        echo "Azure Container Registry: '${{ inputs.AZURE_CONTAINER_REGISTRY }}'"
+
+    # login to Azure using OIDC (to be able to adjust firewall rules)
+    - name: Login to Azure using OIDC
+      uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
+      with:
+        client-id: ${{ inputs.AZURE_CLIENT_ID }}
+        tenant-id: ${{ inputs.AZURE_TENANT_ID }}
+        subscription-id: ${{ inputs.AZURE_SUBSCRIPTION_ID }}
+
+    # add current GitHub actions runner public IP to Azure key vault networking rules
+    - name: Add public IP
+      shell: bash
+      if: ${{ inputs.ACTION == 'open' }}
+      run: |
+        if [[ $( az acr list --resource-group ${{ inputs.AZURE_RESOURCE_GROUP }} --query "[?name=='${{ inputs.AZURE_CONTAINER_REGISTRY }}'] | length(@)") > 0 ]]
+        then
+          echo "Container registry '${{ inputs.AZURE_CONTAINER_REGISTRY }}' exists, running container registry firewall script."
+          chmod +x $GITHUB_WORKSPACE/.github/actions/azure-firewall/scripts/container-registry/add-my-public-ip.sh
+          $GITHUB_WORKSPACE/.github/actions/azure-firewall/scripts/container-registry/add-my-public-ip.sh --resource-group ${{ inputs.AZURE_RESOURCE_GROUP }} --name ${{ inputs.AZURE_CONTAINER_REGISTRY }}
+        else
+          echo "Container registry '${{ inputs.AZURE_CONTAINER_REGISTRY }}' does not exist. Skipping container registry firewall script for first run."
+        fi
+
+    # remove current GitHub actions runner public IP from Azure key vault networking rules
+    - name: Remove public IP
+      shell: bash
+      if: ${{ inputs.ACTION == 'close' }}
+      run: |
+        if [[ $( az acr list --resource-group ${{ inputs.AZURE_RESOURCE_GROUP }} --query "[?name=='${{ inputs.AZURE_CONTAINER_REGISTRY }}'] | length(@)") > 0 ]]
+        then
+          echo "Container registry '${{ inputs.AZURE_CONTAINER_REGISTRY }}' exists, running container registry firewall script."
+          chmod +x $GITHUB_WORKSPACE/.github/actions/azure-firewall/scripts/container-registry/remove-my-public-ip.sh
+          $GITHUB_WORKSPACE/.github/actions/azure-firewall/scripts/container-registry/remove-my-public-ip.sh --resource-group ${{ inputs.AZURE_RESOURCE_GROUP }} --name ${{ inputs.AZURE_CONTAINER_REGISTRY }}
+        else
+          echo "Container registry '${{ inputs.AZURE_CONTAINER_REGISTRY }}' does not exist. Skipping container registry firewall script for first run."
+        fi
+
+    # Debugging output
+    - name: Debugging - Output public IP
+      shell: bash
+      run: |
+        echo $public_ip
