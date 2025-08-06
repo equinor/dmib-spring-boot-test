@@ -1,0 +1,66 @@
+name: CI - Tests
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.ref }}-ci-tests
+  cancel-in-progress: true
+
+# only allow minimum required permissions at top-level
+permissions:
+  contents: read
+
+jobs:
+
+  build-and-test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+
+    permissions:
+      # needed for checkout
+      contents: read
+      # publish JUnit tests report as check result
+      checks: write
+      # jacoco coverage report
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Java
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Build & Run Tests
+        run: mvn clean verify --batch-mode --no-transfer-progress
+
+      - name: Publish Tests Report
+        uses: dorny/test-reporter@890a17cecf52a379fc869ab770a71657660be727 # v2.1.0
+        # always run, regardless of whether the tests in previous step have failed or succeeded.
+        if: success() || failure()
+        with:
+          name: JUnit Tests Report
+          path: "**/target/**/TEST-*.xml"
+          reporter: java-junit
+
+      - name: Publish JaCoCo Report to PR
+        uses: madrapps/jacoco-report@50d3aff4548aa991e6753342d9ba291084e63848 # v1.7.2
+        if: success() && github.event_name == 'pull_request' # run only if previous steps succeeded and it is a PR
+        with:
+          paths: "**/target/**/jacoco.xml"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 🤖 Java Code Coverage
+          min-coverage-overall: 80
+          update-comment: true
+          continue-on-error: false
+          pass-emoji: ✔️
+          fail-emoji: 🥺
