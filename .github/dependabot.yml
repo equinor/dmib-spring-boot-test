@@ -1,0 +1,32 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    # all composite actions must be individually listed here
+    # https://github.com/dependabot/dependabot-core/issues/6704
+    directories:
+      - '/'
+      - '/.github/actions/azure-firewall'
+      - '/.github/actions/build-and-push'
+      - '/.github/actions/deploy'
+      - '/.github/actions/release-find-version'
+      - '/.github/actions/run-checkstyle'
+    schedule:
+      interval: weekly
+      day: sunday
+    groups:
+      gh-actions:
+        update-types:
+          - major
+          - minor
+          - patch
+
+  - package-ecosystem: maven
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: sunday
+    groups:
+      gradle-dependencies:
+        patterns:
+          # Use wildcard to bundle plugins and libs into one PR
+          - "*"
