@@ -38,7 +38,7 @@
     <repositories>
         <repository>
             <name>Equinor - Liquids Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/equinor/*</url>
+            <url>https://maven.pkg.github.com/equinor/liquids</url>
             <id>github-equinor-liquids</id>
         </repository>
         <repository>
