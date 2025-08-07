@@ -60,7 +60,7 @@
             <artifactId>liquids-unit-conversion</artifactId>
             <version>${liquids-unit-conversion.version}</version>
         </dependency>
-
+<!-- 
         <dependency>
             <groupId>com.equinor.tops</groupId>
             <artifactId>commons-deal</artifactId>
@@ -71,7 +71,7 @@
                     <artifactId>swagger-annotations-jakarta</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

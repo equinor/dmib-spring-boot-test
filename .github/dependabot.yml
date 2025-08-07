@@ -40,3 +40,12 @@ updates:
         patterns:
           # use wildcard to bundle plugins and libs into one PR
           - "*"
+    registries:
+      - maven-github
+
+registries:
+  maven-github:
+    type: maven-repository
+    url: https://maven.pkg.github.com/equinor/liquids
+    username: x-access-token # username doesn't matter
+    password: ${{ secrets.PACKAGES_USER_TOKEN }} # dependabot secret
