@@ -18,7 +18,7 @@ updates:
       interval: weekly
       day: sunday
     commit-message:
-      prefix: "ci"
+      prefix: "chore"
       include: "scope"
     groups:
       # separate groups for safe and major updates
@@ -37,7 +37,7 @@ updates:
       interval: weekly
       day: sunday
     commit-message:
-      prefix: "deps"
+      prefix: "chore"
       include: "scope"
     groups:
       maven-dependencies:
