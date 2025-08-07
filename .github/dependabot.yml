@@ -11,12 +11,16 @@ updates:
       - '/.github/actions/deploy'
       - '/.github/actions/release-find-version'
       - '/.github/actions/run-checkstyle'
+    ignore:
+      # ignore private GitHub Action that Dependabot doesn't have access to
+      - dependency-name: "equinor/oilmod1-release-actions"
     schedule:
       interval: weekly
       day: sunday
     commit-message:
       prefix: "ci"
       include: "scope"
+    
     groups:
       github-actions:
         update-types:
@@ -36,5 +40,5 @@ updates:
     groups:
       maven-dependencies:
         patterns:
-          # Use wildcard to bundle plugins and libs into one PR
+          # use wildcard to bundle plugins and libs into one PR
           - "*"
