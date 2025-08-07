@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: github-actions
     open-pull-requests-limit: 10
     directories:
-      - '/.github/workflows'
+      - '/'
       # all composite actions must be individually listed here
       # https://github.com/dependabot/dependabot-core/issues/6704
       - '/.github/actions/azure-firewall'
@@ -40,7 +40,15 @@ updates:
       prefix: "chore"
       include: "scope"
     groups:
-      maven-dependencies:
-        patterns:
+        # separate groups for safe and major updates
+      maven-deps-major:
+        update-types:
+          - major
+      maven-deps-safe:
+        update-types:
+          - minor
+          - patch
+      #maven-dependencies:
+      #  patterns:
           # use wildcard to bundle plugins and libs into one PR
-          - "*"
+      #    - "*"
