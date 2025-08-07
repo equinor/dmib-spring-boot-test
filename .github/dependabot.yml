@@ -20,11 +20,13 @@ updates:
     commit-message:
       prefix: "ci"
       include: "scope"
-    
     groups:
-      github-actions:
+      # separate groups for safe and major updates
+      github-actions-major:
         update-types:
           - major
+      github-actions-safe:
+        update-types:
           - minor
           - patch
 
