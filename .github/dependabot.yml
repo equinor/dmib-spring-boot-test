@@ -14,6 +14,9 @@ updates:
     schedule:
       interval: weekly
       day: sunday
+    commit-message:
+      prefix: "ci"
+      include: "scope"
     groups:
       github-actions:
         update-types:
@@ -27,6 +30,9 @@ updates:
     schedule:
       interval: weekly
       day: sunday
+    commit-message:
+      prefix: "deps"
+      include: "scope"
     groups:
       maven-dependencies:
         patterns:
