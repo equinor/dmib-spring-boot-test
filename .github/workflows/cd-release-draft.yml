@@ -1,0 +1,104 @@
+# Description:
+# This workflow is triggered on push to the main branch.
+# It prepares a draft release on GitHub and Jira for the upcoming release.
+
+name: CD - Draft release
+
+on:
+  workflow_dispatch:  # This enables manual triggering via GitHub UI
+
+
+permissions:
+  contents: read
+
+jobs:
+
+  # determine the version number for upcoming release from the last commit message
+  find-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release-find-version.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - id: release-find-version
+        uses: ./.github/actions/release-find-version
+
+  # generate changelog for the upcoming release
+  generate-changelog:
+    runs-on: ubuntu-latest
+    needs: find-version
+
+    outputs:
+      release-body: ${{ steps.git-cliff.outputs.content }}
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0 # this fetch will include all history and tags
+
+      - id: git-cliff
+        uses: orhun/git-cliff-action@4a4a951bc43fafe41cd2348d181853f52356bee7 # v4.4.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          config: cliff.toml
+          # --unreleased: process commits that do not belong to a tag
+          # --tag : sets the tag for the upcoming release
+          args: --verbose \
+            --unreleased \
+            --tag v${{ needs.find-version.outputs.version }} \
+            --github-repo ${{ github.repository }}
+
+  # prepare GitHub release
+  draft-github-release:
+    runs-on: ubuntu-latest
+    needs: [find-version, generate-changelog]
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Draft GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          release_tag="v${{ needs.find-version.outputs.version }}"
+
+          # this workflow will be triggered on each commit to the branch (for example, during bugfix),
+          # resulting in multiple draft releases, thus we need to clean previously added before creation of a new one
+          echo "Check and delete pre-existing releases for this tag version: $release_tag (if any)"
+          gh release list --json isDraft,tagName -q '.[] | select(.isDraft == true and .tagName == "'$release_tag'") | .tagName' \
+            | while read tag; do  
+            echo "Deleting existing draft release: $tag"
+            gh release delete -y "$tag"
+          done
+
+          echo "Prepare a draft of GitHub release for version $release_tag"
+          gh release create $release_tag \
+            --draft \
+            --target main \
+            --title $release_tag \
+            --notes "${{ needs.generate-changelog.outputs.release-body }}"
+
+  # prepare Jira release
+  draft-jira-release:
+    runs-on: ubuntu-latest
+    needs: [find-version, generate-changelog]
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Draft Jira release
+        uses: equinor/oilmod1-release-actions/prepare-jira-release@21c4ce3df5e832a36319e3f6af78f8d1095d96cf # v1.0.0
+        with:
+          jiraProject: ${{ vars.JIRA_PROJECT_ID }}
+          jiraTitle: "${{ vars.JIRA_PROJECT_NAME }} - v${{ needs.find-version.outputs.version }}"
+          prefix: ${{ vars.JIRA_TASK_PREFIX }}
+          changelog: ${{ needs.generate-changelog.outputs.release-body }}
+          username: ${{ vars.JIRA_USERNAME }}
+          token: ${{ secrets.JIRA_TOKEN }}
