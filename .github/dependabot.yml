@@ -21,14 +21,10 @@ updates:
       prefix: "chore"
       include: "scope"
     groups:
-      # separate groups for safe and major updates
-      github-actions-major:
-        update-types:
-          - major
-      github-actions-safe:
-        update-types:
-          - minor
-          - patch
+      github-actions:
+        patterns:
+          # use wildcard to bundle plugins and libs into one PR
+          - "*"
 
   - package-ecosystem: maven
     open-pull-requests-limit: 10
@@ -40,15 +36,7 @@ updates:
       prefix: "chore"
       include: "scope"
     groups:
-        # separate groups for safe and major updates
-      maven-deps-major:
-        update-types:
-          - major
-      maven-deps-safe:
-        update-types:
-          - minor
-          - patch
-      #maven-dependencies:
-      #  patterns:
+      maven-dependencies:
+        patterns:
           # use wildcard to bundle plugins and libs into one PR
-      #    - "*"
+          - "*"
