@@ -37,7 +37,7 @@ runs:
 
     # deploy container app from container registry
     - name: Deploy container app from container registry
-      uses: azure/container-apps-deploy-action@5f5f4c56ca90376e3cfbd76ba8fe8533c784e655 # v2
+      uses: azure/container-apps-deploy-action@8dff69dac3367c32ceb2690d8f13adbeab462703 # v2
       with:
         imageToDeploy: ${{ inputs.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ inputs.AZURE_CONTAINER_REGISTRY_REPO }}:${{ github.sha }}
         acrName: ${{ inputs.AZURE_CONTAINER_REGISTRY }}
