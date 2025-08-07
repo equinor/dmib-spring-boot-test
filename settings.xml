@@ -1,0 +1,12 @@
+<settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://maven.apache.org/SETTINGS/1.0.0" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <servers>
+        <server>
+            <id>github-equinor-liquids</id>
+            <password>${PACKAGES_USER_TOKEN}</password>
+            <username>${PACKAGES_USER_NAME}</username>
+        </server>
+    </servers>
+</settings>
