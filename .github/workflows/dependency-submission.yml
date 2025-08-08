@@ -48,4 +48,3 @@ jobs:
           PACKAGES_USER_TOKEN: ${{ secrets.PACKAGES_USER_TOKEN }}
         with:
           settings-file: settings.xml
-          maven-args: '-B -DskipTests'
