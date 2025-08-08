@@ -41,10 +41,26 @@ jobs:
       
       # Submit dependencies to the GitHub dependency graph
       - name: Submit Dependency Snapshot
+        id: dependency-submission
         uses: advanced-security/maven-dependency-submission-action@b275d12641ac2d2108b2cbb7598b154ad2f2cee8 # v5.0.0
+        continue-on-error: true  # This allows the workflow to continue even if this step fails
         with:
           settings-file: settings.xml
 
-      - name: Make Maven wrapper executable
+      - name: Output settings.xml
+        if: always()  # This step will run even if previous steps fail
         run: cat settings.xml
+        
+      # Add debugging information
+      - name: Debug Environment
+        if: always()  # This will run regardless of previous steps' success/failure
+        run: |
+          echo "Checking Maven installation:"
+          which mvn || echo "Maven not found"
+          mvn --version || echo "Maven version command failed"
+          echo "Checking Maven wrapper:"
+          ls -la ./mvnw || echo "Maven wrapper not found"
+          echo "Checking working directory:"
+          pwd
+          ls -la
       
