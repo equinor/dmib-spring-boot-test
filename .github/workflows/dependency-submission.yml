@@ -20,7 +20,6 @@ on:
 # Sets permissions of the GITHUB_TOKEN to allow submission of dependencies
 permissions:
   contents: write # Needed for dependency submission
-  id-token: write # This is required for requesting the JWT token
 
 jobs:
   dependency-submission:
