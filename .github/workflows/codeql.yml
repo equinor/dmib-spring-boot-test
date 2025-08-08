@@ -46,7 +46,7 @@ jobs:
         - language: actions
           build-mode: none
         - language: java-kotlin
-          build-mode: autobuild # Changed to autobuild to analyze both Java and Kotlin with our authentication
+          build-mode: manual # Changed to manual to analyze both Java and Kotlin with our authentication
         # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift'
         # Use `c-cpp` to analyze code written in C, C++ or both
         # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
@@ -73,8 +73,8 @@ jobs:
     - name: Setup Maven Authentication
       if: matrix.language == 'java-kotlin'
       env:
-        PACKAGES_USER_NAME: ${{ github.actor }}
-        PACKAGES_USER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PACKAGES_USER_NAME: ${{ vars.PACKAGES_USER_NAME }}
+        PACKAGES_USER_TOKEN: ${{ secrets.PACKAGES_USER_TOKEN }}
       run: |
         mkdir -p ~/.m2
         cat > ~/.m2/settings.xml << EOF
@@ -116,7 +116,7 @@ jobs:
       run: |
         if [[ "${{ matrix.language }}" == "java-kotlin" ]]; then
           # Build Maven project with proper settings
-          mvn clean package -B -DskipTests
+          mvn clean package -B -DskipTests --settings settings.xml --no-transfer-progress
         else
           echo "Manual build mode specified for ${{ matrix.language }} but no build commands defined"
           echo "Please configure specific build commands for this language"
