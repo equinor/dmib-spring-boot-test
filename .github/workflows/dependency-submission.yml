@@ -1,6 +1,7 @@
 name: Dependency Submission
 
 on:
+  workflow_dispatch:  # Keep manual trigger option
   push:
     branches: [ main, develop ]
     paths:
@@ -15,7 +16,6 @@ on:
       - 'settings.xml'
   schedule:
     - cron: '0 0 * * 0'  # Weekly on Sundays at midnight
-  workflow_dispatch:  # Keep manual trigger option
 
 # Sets permissions of the GITHUB_TOKEN to allow submission of dependencies
 permissions:
