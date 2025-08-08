@@ -2,8 +2,20 @@ name: Dependency Submission
 
 on:
   push:
-    branches: [ develop ]
-  workflow_dispatch:
+    branches: [ main, develop ]
+    paths:
+      - 'pom.xml'
+      - '**/pom.xml'
+      - 'settings.xml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'pom.xml'
+      - '**/pom.xml'
+      - 'settings.xml'
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sundays at midnight
+  workflow_dispatch:  # Keep manual trigger option
 
 # Sets permissions of the GITHUB_TOKEN to allow submission of dependencies
 permissions:
