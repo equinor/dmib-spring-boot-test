@@ -42,10 +42,10 @@ jobs:
       
       # Submit dependencies to the GitHub dependency graph
       - name: Submit Dependency Snapshot
-        uses: advanced-security/maven-dependency-submission-action@b275d12641ac2d2108b2cbb7598b154ad2f2cee8 # v5.0.0
+        uses: advanced-security/maven-dependency-submission-action@v5
         env:
           PACKAGES_USER_NAME: ${{ vars.PACKAGES_USER_NAME }}
           PACKAGES_USER_TOKEN: ${{ secrets.PACKAGES_USER_TOKEN }}
         with:
-          maven-args: '-B -DskipTests --settings settings.xml'
-          maven-command: 'mvn'  # Use installed Maven instead of the wrapper
+          settings-file: settings.xml
+          maven-args: '-B -DskipTests'
