@@ -36,6 +36,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
       
+      # Make Maven wrapper executable
+      - name: Make Maven wrapper executable
+        run: chmod +x ./mvnw
+      
       # Submit dependencies to the GitHub dependency graph
       - name: Submit Dependency Snapshot
         uses: advanced-security/maven-dependency-submission-action@b275d12641ac2d2108b2cbb7598b154ad2f2cee8 # v5.0.0
@@ -44,3 +48,4 @@ jobs:
           PACKAGES_USER_TOKEN: ${{ secrets.PACKAGES_USER_TOKEN }}
         with:
           maven-args: '-B -DskipTests --settings settings.xml'
+          maven-command: 'mvn'  # Use installed Maven instead of the wrapper
