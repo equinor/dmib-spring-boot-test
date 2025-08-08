@@ -85,12 +85,6 @@
         </dependency>
 
         <dependency>
-            <groupId>de.neuland-bfi</groupId>
-            <artifactId>pug4j</artifactId>
-            <version>${pug4j.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf</artifactId>
             <version>${thymeleaf.version}</version>
