@@ -64,33 +64,17 @@ jobs:
     - name: Setup Java
       if: matrix.language == 'java-kotlin'
       uses: actions/setup-java@v4
+      env:
+        PACKAGES_USER_NAME: ${{ vars.PACKAGES_USER_NAME }}
+        PACKAGES_USER_TOKEN: ${{ secrets.PACKAGES_USER_TOKEN }}
       with:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
 
-    # Configure Maven settings.xml for private package authentication
-    - name: Setup Maven Authentication
-      if: matrix.language == 'java-kotlin'
-      env:
-        PACKAGES_USER_NAME: ${{ vars.PACKAGES_USER_NAME }}
-        PACKAGES_USER_TOKEN: ${{ secrets.PACKAGES_USER_TOKEN }}
-      run: |
-        mkdir -p ~/.m2
-        cat > ~/.m2/settings.xml << EOF
-        <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
-          <servers>
-            <server>
-              <id>github-equinor-liquids</id>
-              <username>\${env.PACKAGES_USER_NAME}</username>
-              <password>\${env.PACKAGES_USER_TOKEN}</password>
-            </server>
-          </servers>
-        </settings>
-        EOF
-        echo "Created Maven settings file with authentication"
+        server-id: github-equinor-liquids
+        server-username: ${{ vars.PACKAGES_USER_NAME }}
+        server-password: ${{ secrets.PACKAGES_USER_TOKEN }}
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -113,6 +97,9 @@ jobs:
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
     - if: matrix.build-mode == 'manual'
       shell: bash
+      env:
+        PACKAGES_USER_NAME: ${{ vars.PACKAGES_USER_NAME }}
+        PACKAGES_USER_TOKEN: ${{ secrets.PACKAGES_USER_TOKEN }}
       run: |
         if [[ "${{ matrix.language }}" == "java-kotlin" ]]; then
           # Build Maven project with proper settings
