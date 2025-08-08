@@ -24,7 +24,7 @@
         <pug4j.version>2.3.1</pug4j.version>
         <thymeleaf.version>3.1.3.RELEASE</thymeleaf.version>
         <thymeleaf-layout-dialect.version>3.4.0</thymeleaf-layout-dialect.version>
-        <liquids-unit-conversion.version>2.0.0</liquids-unit-conversion.version>
+        <liquids-unit-conversion.version>2.1.0</liquids-unit-conversion.version>
         <commons-deal.version>2.12.0</commons-deal.version>
     </properties>
 
@@ -38,7 +38,7 @@
     <repositories>
         <repository>
             <name>Equinor - Liquids Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/equinor/*</url>
+            <url>https://maven.pkg.github.com/equinor/liquids</url>
             <id>github-equinor-liquids</id>
         </repository>
         <repository>
