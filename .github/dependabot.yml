@@ -40,10 +40,10 @@ updates:
           # use wildcard to bundle plugins and libs into one PR
           - "*"
     registries:
-      - maven-github
+      - github-maven
 
 registries:
-  maven-github:
+  github-maven:
     type: maven-repository
     url: https://maven.pkg.github.com/equinor/
     username: x-access-token # username doesn't matter
