@@ -1,7 +1,7 @@
 name: Dependency Submission
 
 on:
-  workflow_dispatch:  # Keep manual trigger option
+  workflow_dispatch: # Allows manual triggering of the workflow
   push:
     branches: [ main, develop ]
     paths:
@@ -17,13 +17,16 @@ on:
   schedule:
     - cron: '0 0 * * 0'  # Weekly on Sundays at midnight
 
-# Sets permissions of the GITHUB_TOKEN to allow submission of dependencies
+# Sets minimal permissions by default
 permissions:
-  contents: write # Needed for dependency submission
+  contents: read
 
 jobs:
   dependency-submission:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed for dependency submission
+
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2

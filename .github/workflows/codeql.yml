@@ -12,7 +12,10 @@ on:
     branches: [ develop, main ]
   pull_request:
     branches: [ develop, main ]
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sundays at midnight
 
+# Sets minimal permissions by default
 permissions:
   contents: read
 
