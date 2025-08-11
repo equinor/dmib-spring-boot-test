@@ -3,30 +3,22 @@
 #
 # You may wish to alter this file to override the set of languages analyzed,
 # or to provide custom queries or build logic.
-#
-# ******** NOTE ********
-# We have attempted to detect the languages in your repository. Please check
-# the `language` matrix defined below to confirm you have the correct set of
-# supported CodeQL languages.
-#
-name: "CodeQL Advanced"
+
+name: CodeQL Advanced
 
 on:
+  workflow_dispatch: # Allows manual triggering of the workflow
   push:
-    branches: [ "develop" ]
+    branches: [ develop, main ]
   pull_request:
-    branches: [ "develop" ]
-  schedule:
-    - cron: '18 12 * * 1'
+    branches: [ develop, main ]
+
+permissions:
+  contents: read
 
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
-    # Runner size impacts CodeQL analysis time. To learn more, please see:
-    #   - https://gh.io/recommended-hardware-resources-for-running-codeql
-    #   - https://gh.io/supported-runners-and-hardware-resources
-    #   - https://gh.io/using-larger-runners (GitHub.com only)
-    # Consider using larger runners or machines with greater resources for possible analysis time improvements.
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     permissions:
       # required for all workflows
@@ -43,58 +35,53 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - language: actions
-          build-mode: none
-        - language: java-kotlin
-          build-mode: manual # Changed to manual to analyze both Java and Kotlin with our authentication
-        # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift'
-        # Use `c-cpp` to analyze code written in C, C++ or both
-        # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
-        # Use 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
-        # To learn more about changing the languages that are analyzed or customizing the build mode for your analysis,
-        # see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning.
-        # If you are analyzing a compiled language, you can modify the 'build-mode' for that language to customize how
-        # your codebase is analyzed, see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/codeql-code-scanning-for-compiled-languages
+          - language: actions
+            build-mode: none
+          - language: java-kotlin
+            build-mode: manual
+    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # Add any setup steps before running the `github/codeql-action/init` action.
-    # Set up Java and Maven for authentication with private repositories
-    - name: Setup Java
-      if: matrix.language == 'java-kotlin'
-      uses: actions/setup-java@v4
-      env:
-        PACKAGES_USER_NAME: ${{ vars.PACKAGES_USER_NAME }}
-        PACKAGES_USER_TOKEN: ${{ secrets.PACKAGES_USER_TOKEN }}
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        cache: maven
+      # Add any setup steps before running the `github/codeql-action/init` action.
 
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        build-mode: ${{ matrix.build-mode }}
+      - name: Setup Java
+        if: matrix.language == 'java-kotlin'
+        uses: actions/setup-java@v4
+        env:
+          # Set up Java and Maven for authentication with private repositories
+          PACKAGES_USER_NAME: ${{ vars.PACKAGES_USER_NAME }}
+          PACKAGES_USER_TOKEN: ${{ secrets.PACKAGES_USER_TOKEN }}
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
 
-    - if: matrix.build-mode == 'manual'
-      shell: bash
-      env:
-        PACKAGES_USER_NAME: ${{ vars.PACKAGES_USER_NAME }}
-        PACKAGES_USER_TOKEN: ${{ secrets.PACKAGES_USER_TOKEN }}
-      run: |
-        if [[ "${{ matrix.language }}" == "java-kotlin" ]]; then
-          # Build Maven project with proper settings
-          mvn clean package -DskipTests -B -s settings.xml -ntp
-        else
-          echo "Manual build mode specified for ${{ matrix.language }} but no build commands defined"
-          echo "Please configure specific build commands for this language"
-          exit 1
-        fi
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
+      - if: matrix.build-mode == 'manual'
+        shell: bash
+        env:
+          # Set up Java and Maven for authentication with private repositories
+          PACKAGES_USER_NAME: ${{ vars.PACKAGES_USER_NAME }}
+          PACKAGES_USER_TOKEN: ${{ secrets.PACKAGES_USER_TOKEN }}
+        run: |
+          if [[ "${{ matrix.language }}" == "java-kotlin" ]]; then
+            # Build Maven project with proper settings
+            mvn clean package -DskipTests -B -s settings.xml -ntp
+          else
+            echo "Manual build mode specified for ${{ matrix.language }} but no build commands defined"
+            echo "Please configure specific build commands for this language"
+            exit 1
+          fi
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
