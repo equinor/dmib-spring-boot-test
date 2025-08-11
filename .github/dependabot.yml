@@ -24,7 +24,7 @@ updates:
       github-actions:
         patterns:
           # use wildcard to bundle plugins and libs into one PR
-          - '*'
+          - "*"
 
   - package-ecosystem: maven
     open-pull-requests-limit: 10
@@ -38,7 +38,7 @@ updates:
       maven-dependencies:
         patterns:
           # use wildcard to bundle plugins and libs into one PR
-          - '*'
+          - "*"
     registries:
       - maven-github
 
