@@ -19,7 +19,7 @@ jobs:
       version: ${{ steps.release-find-version.outputs.version }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - id: release-find-version
         uses: ./.github/actions/release-find-version
@@ -33,7 +33,7 @@ jobs:
       release-body: ${{ steps.git-cliff.outputs.content }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # this fetch will include all history and tags
 
