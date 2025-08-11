@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -19,6 +21,16 @@ import java.util.logging.Logger;
 public class DemoApplication {
 	
 	private static final Logger LOGGER = Logger.getLogger(DemoApplication.class.getName());
+
+	// Allowlist of permitted commands
+	private static final Map<String, String[]> ALLOWED_COMMANDS = new HashMap<>();
+	static {
+		// Map user-friendly command names to actual system commands
+		ALLOWED_COMMANDS.put("date", new String[] {"date"});
+		ALLOWED_COMMANDS.put("uptime", new String[] {"uptime"});
+		ALLOWED_COMMANDS.put("whoami", new String[] {"whoami"});
+		// Add more allowed commands as needed
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
@@ -59,8 +71,12 @@ public class DemoApplication {
 	@GetMapping("/execute")
 	public String executeCommand(@RequestParam String command) {
 		try {
-			// VULNERABLE: Direct use of user input in system commands
-			Process process = Runtime.getRuntime().exec(command);
+			// Only allow execution of predefined commands
+			String[] cmd = ALLOWED_COMMANDS.get(command);
+			if (cmd == null) {
+				return "Error: Command not allowed";
+			}
+			Process process = Runtime.getRuntime().exec(cmd);
 			return "Command executed with exit code: " + process.waitFor();
 		} catch (IOException | InterruptedException e) {
 			return "Error: " + e.getMessage();
