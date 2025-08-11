@@ -36,9 +36,9 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          java-version: "21"
-          distribution: "temurin"
-          cache: "maven"
+          java-version: 21
+          distribution: temurin
+          cache: maven
 
       - name: Build & Run Tests
         env:
@@ -52,14 +52,14 @@ jobs:
         if: success() || failure()
         with:
           name: JUnit Tests Report
-          path: "**/target/**/TEST-*.xml"
+          path: '**/target/**/TEST-*.xml'
           reporter: java-junit
 
       - name: Publish JaCoCo Report to PR
         uses: madrapps/jacoco-report@50d3aff4548aa991e6753342d9ba291084e63848 # v1.7.2
         if: success() && github.event_name == 'pull_request' # run only if previous steps succeeded and it is a PR
         with:
-          paths: "**/target/**/jacoco.xml"
+          paths: '**/target/**/jacoco.xml'
           token: ${{ secrets.GITHUB_TOKEN }}
           title: 🤖 Java Code Coverage
           min-coverage-overall: 80

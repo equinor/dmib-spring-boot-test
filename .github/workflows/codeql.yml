@@ -57,8 +57,8 @@ jobs:
           PACKAGES_USER_NAME: ${{ vars.PACKAGES_USER_NAME }}
           PACKAGES_USER_TOKEN: ${{ secrets.PACKAGES_USER_TOKEN }}
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: 21
+          distribution: temurin
           cache: maven
 
       # Initializes the CodeQL tools for scanning.

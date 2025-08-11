@@ -13,33 +13,33 @@ updates:
       - '/.github/actions/run-checkstyle'
     ignore:
       # ignore private GitHub Action that Dependabot doesn't have access to
-      - dependency-name: "equinor/oilmod1-release-actions"
+      - dependency-name: 'equinor/oilmod1-release-actions'
     schedule:
       interval: weekly
       day: sunday
     commit-message:
-      prefix: "chore"
-      include: "scope"
+      prefix: chore
+      include: scope
     groups:
       github-actions:
         patterns:
           # use wildcard to bundle plugins and libs into one PR
-          - "*"
+          - '*'
 
   - package-ecosystem: maven
     open-pull-requests-limit: 10
     directory: '/'
     schedule:
-      interval: weekly
+      interval: daily
       day: sunday
     commit-message:
-      prefix: "chore"
-      include: "scope"
+      prefix: chore
+      include: scope
     groups:
       maven-dependencies:
         patterns:
           # use wildcard to bundle plugins and libs into one PR
-          - "*"
+          - '*'
     registries:
       - maven-github
 
