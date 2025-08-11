@@ -1,4 +1,12 @@
 version: 2
+
+registries:
+  github-maven:
+    type: maven-repository
+    url: https://maven.pkg.github.com/equinor/
+    username: x-access-token # username doesn't matter
+    password: ${{ secrets.PACKAGES_USER_TOKEN }} # dependabot secret
+
 updates:
   - package-ecosystem: github-actions
     open-pull-requests-limit: 10
@@ -33,7 +41,8 @@ updates:
     open-pull-requests-limit: 10
     directory: '/'
     schedule:
-      interval: daily
+      interval: weekly
+      day: sunday
     commit-message:
       prefix: chore
       include: scope
@@ -48,10 +57,3 @@ updates:
           - "*"
     registries:
       - github-maven
-
-registries:
-  github-maven:
-    type: maven-repository
-    url: https://maven.pkg.github.com/equinor/
-    username: x-access-token # username doesn't matter
-    password: ${{ secrets.PACKAGES_USER_TOKEN }} # dependabot secret
