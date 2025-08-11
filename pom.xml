@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.0</version>
+        <version>3.5.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -24,9 +24,9 @@
         <pug4j.version>2.3.1</pug4j.version>
         <thymeleaf.version>3.1.3.RELEASE</thymeleaf.version>
         <thymeleaf-layout-dialect.version>3.4.0</thymeleaf-layout-dialect.version>
-        <liquids-unit-conversion.version>2.0.0</liquids-unit-conversion.version>
-        <commons-deal.version>2.9.0</commons-deal.version>
-        <topsdomain.version>2.0.18</topsdomain.version>
+        <liquids-unit-conversion.version>2.1.3</liquids-unit-conversion.version>
+        <commons-deal.version>2.13.0</commons-deal.version>
+        <topsdomain.version>2.0.22</topsdomain.version>
     </properties>
 
     <scm>
