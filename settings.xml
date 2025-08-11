@@ -4,7 +4,7 @@
 
     <servers>
         <server>
-            <id>github-equinor-liquids</id>
+            <id>github-equinor</id>
             <password>${PACKAGES_USER_TOKEN}</password>
             <username>${PACKAGES_USER_NAME}</username>
         </server>

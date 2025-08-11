@@ -52,7 +52,7 @@
         <repository>
             <name>GitHub - Equinor Maven Packages</name>
             <url>https://maven.pkg.github.com/equinor/liquids</url>
-            <id>github-equinor-liquids</id>
+            <id>github-equinor</id>
         </repository>
 
     </repositories>
