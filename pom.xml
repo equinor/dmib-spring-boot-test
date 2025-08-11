@@ -37,7 +37,7 @@
     </scm>
 
     <repositories>
-        <!-- Maven Central at first place to ensure standard dependencies are resolved -->
+        <!-- Maven Central Repository -->
         <repository>
             <url>https://repo1.maven.org/maven2</url>
             <id>central</id>
@@ -48,9 +48,9 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <!-- Private GitHub Packages repository to resolve in-house made dependencies -->
+        <!-- Private GitHub Packages used for in-house private dependencies -->
         <repository>
-            <name>Equinor - Liquids Apache Maven Packages</name>
+            <name>GitHub - Equinor Maven Packages</name>
             <url>https://maven.pkg.github.com/equinor/liquids</url>
             <id>github-equinor-liquids</id>
         </repository>
