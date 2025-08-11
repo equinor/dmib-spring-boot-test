@@ -29,7 +29,7 @@ runs:
   steps:
     # login to Azure using OIDC (to be able to later login to container registry)
     - name: Login to Azure using OIDC
-      uses: azure/login@v2
+      uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
       with:
         tenant-id: ${{ inputs.AZURE_TENANT_ID }}
         subscription-id: ${{ inputs.AZURE_SUBSCRIPTION_ID }}
@@ -37,7 +37,7 @@ runs:
 
     # deploy container app from container registry
     - name: Deploy container app from container registry
-      uses: azure/container-apps-deploy-action@v2
+      uses: azure/container-apps-deploy-action@8dff69dac3367c32ceb2690d8f13adbeab462703 # v2
       with:
         imageToDeploy: ${{ inputs.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ inputs.AZURE_CONTAINER_REGISTRY_REPO }}:${{ github.sha }}
         acrName: ${{ inputs.AZURE_CONTAINER_REGISTRY }}

@@ -19,7 +19,7 @@ jobs:
       version: ${{ steps.release-find-version.outputs.version }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - id: release-find-version
         uses: ./.github/actions/release-find-version
@@ -33,7 +33,7 @@ jobs:
       release-body: ${{ steps.git-cliff.outputs.content }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v2.7.0
         with:
           fetch-depth: 0 # this fetch will include all history and tags
 
@@ -60,7 +60,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Draft GitHub Release
         env:
@@ -90,7 +90,7 @@ jobs:
     needs: [ find-version, generate-changelog ]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Draft Jira release
         uses: equinor/oilmod1-release-actions/prepare-jira-release@21c4ce3df5e832a36319e3f6af78f8d1095d96cf # v1.0.0
