@@ -51,7 +51,7 @@ updates:
       - maven
       - dependencies
     groups:
-      maven-dependencies:
+      maven:
         patterns:
           # use wildcard to bundle plugins and libs into one PR
           - "*"
