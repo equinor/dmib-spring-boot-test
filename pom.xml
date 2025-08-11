@@ -51,7 +51,7 @@
         <!-- Private GitHub Packages used for in-house private dependencies -->
         <repository>
             <name>GitHub - Equinor Maven Packages</name>
-            <url>https://maven.pkg.github.com/equinor/liquids</url>
+            <url>https://maven.pkg.github.com/equinor/*</url>
             <id>github-equinor</id>
         </repository>
 
