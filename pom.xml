@@ -26,6 +26,7 @@
         <thymeleaf-layout-dialect.version>3.4.0</thymeleaf-layout-dialect.version>
         <liquids-unit-conversion.version>2.0.0</liquids-unit-conversion.version>
         <commons-deal.version>2.9.0</commons-deal.version>
+        <topsdomain.version>2.0.18</topsdomain.version>
     </properties>
 
     <scm>
@@ -76,7 +77,7 @@
         <dependency>
             <groupId>com.equinor.tops</groupId>
             <artifactId>topsdomain</artifactId>
-            <version>2.0.18</version>
+            <version>${topsdomain.version}</version>
         </dependency> 
 
         <dependency>
