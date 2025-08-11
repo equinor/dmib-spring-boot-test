@@ -20,6 +20,9 @@ updates:
     commit-message:
       prefix: chore
       include: scope
+    labels:
+      - github-actions
+      - dependencies
     groups:
       github-actions:
         patterns:
@@ -34,6 +37,10 @@ updates:
     commit-message:
       prefix: chore
       include: scope
+    labels:
+      - java
+      - maven
+      - dependencies
     groups:
       maven-dependencies:
         patterns:
