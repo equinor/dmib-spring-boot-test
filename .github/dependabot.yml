@@ -45,6 +45,6 @@ updates:
 registries:
   maven-github:
     type: maven-repository
-    url: https://maven.pkg.github.com/equinor/liquids
+    url: https://maven.pkg.github.com/equinor/
     username: x-access-token # username doesn't matter
     password: ${{ secrets.PACKAGES_USER_TOKEN }} # dependabot secret
