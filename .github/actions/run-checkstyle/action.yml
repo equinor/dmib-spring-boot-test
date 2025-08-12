@@ -30,7 +30,7 @@ runs:
         echo "commit_hash=${HASH}" >> $GITHUB_OUTPUT
 
     - name: Set up cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: cache-checkstyle
       with:
         path: |
