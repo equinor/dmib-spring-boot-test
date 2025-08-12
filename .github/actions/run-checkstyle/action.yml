@@ -22,7 +22,7 @@ runs:
       shell: bash
       id: get-hash
       run: |
-        HASH=$(curl -sf "https://api.github.com/repos/equinor/oilmod1-code-style/commits/${{ inputs.branch }}" | sed -n 's/.*"sha": "\([a-f0-9]\{40\}\)".*/\1/p' | head -1)
+        HASH=$(curl -sf "https://api.github.com/repos/equinor/oilmod1-code-style/commits/${{ inputs.branch }}" | jq -r '.sha')
         if [ -z "$HASH" ] || ! [[ "$HASH" =~ ^[a-f0-9]{40}$ ]]; then
           echo "Error: Failed to retrieve a valid commit hash from GitHub API." >&2
           exit 1
