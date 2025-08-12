@@ -1,22 +1,54 @@
 name: 'Checkstyle'
 description: 'Run code style checks'
 
+inputs:
+  branch:
+    description: 'Branch of checkstyle config'
+    required: false
+    default: 'main'
+  level:
+    description: 'Reporter level (info, warning, error)'
+    required: false
+    default: 'error'
+  reporter:
+    description: 'Reporter type (github-pr-check, github-check, etc.)'
+    required: false
+    default: 'github-pr-check'
+
 runs:
   using: "composite"
   steps:
+    - name: Get latest commit hash
+      shell: bash
+      id: get-hash
+      run: |
+        HASH=$(curl -s "https://api.github.com/repos/equinor/oilmod1-code-style/commits/${{ inputs.branch }}" | sed -n 's/.*"sha": "\([a-f0-9]*\)".*/\1/p' | head -1)
+        echo "commit_hash=${HASH}" >> $GITHUB_OUTPUT
+
+    - name: Set up cache
+      uses: actions/cache@v3
+      id: cache-checkstyle
+      with:
+        path: |
+          ./oilmod-checkstyle.xml
+          ./oilmod-checkstyle-suppressions.xml
+          ./oilmod-checkstyle-xpath-suppressions.xml
+        key: checkstyle-${{ steps.get-hash.outputs.commit_hash }}
+
     - name: Fetch remote Checkstyle config
+      if: steps.cache-checkstyle.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        curl -O https://raw.githubusercontent.com/equinor/oilmod1-code-style/main/java/checkstyle/oilmod-checkstyle.xml
-        curl -O https://raw.githubusercontent.com/equinor/oilmod1-code-style/main/java/checkstyle/oilmod-checkstyle-suppressions.xml
-        curl -O https://raw.githubusercontent.com/equinor/oilmod1-code-style/main/java/checkstyle/oilmod-checkstyle-xpath-suppressions.xml
+        curl -s -o oilmod-checkstyle.xml \
+          https://raw.githubusercontent.com/equinor/oilmod1-code-style/${{ inputs.branch }}/java/checkstyle/oilmod-checkstyle.xml || exit 1
+        curl -s -o oilmod-checkstyle-suppressions.xml \
+          https://raw.githubusercontent.com/equinor/oilmod1-code-style/${{ inputs.branch }}/java/checkstyle/oilmod-checkstyle-suppressions.xml || exit 1
+        curl -s -o oilmod-checkstyle-xpath-suppressions.xml \
+          https://raw.githubusercontent.com/equinor/oilmod1-code-style/${{ inputs.branch }}/java/checkstyle/oilmod-checkstyle-xpath-suppressions.xml || exit 1
 
     - name: Run Checkstyle and report
       uses: equinor/action-checkstyle@103e2e3ac7640d2b3de3df9b598744190cfec7df # v1.22.0
       with:
-        # reports as pr check comment
-        reporter: github-pr-check
-        # defines reporter level - [info, warning, error], it won't become failure with 'warning'.
-        level: error
-        # defines checkstyle config file with a ruleset
+        reporter: ${{ inputs.reporter }}
+        level: ${{ inputs.level }}
         checkstyle_config: "./oilmod-checkstyle.xml"
