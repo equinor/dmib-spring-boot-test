@@ -38,7 +38,6 @@ updates:
           - "*"
 
   - package-ecosystem: maven
-    open-pull-requests-limit: 10
     directory: '/'
     schedule:
       interval: weekly
@@ -50,10 +49,61 @@ updates:
       - java
       - maven
       - dependencies
+      - parent-pom
+    registries:
+      - github-maven
     groups:
-      maven:
+      parent-dependencies:
         patterns:
-          # use wildcard to bundle plugins and libs into one PR
           - "*"
+        exclude-patterns:
+          # Exclude any module-specific dependencies that might be declared in parent
+          - "com.example.module*"
+
+  - package-ecosystem: maven
+    directory: '/module1'
+    schedule:
+      interval: weekly
+      day: sunday
+    commit-message:
+      prefix: chore
+      include: scope
+    labels:
+      - java
+      - maven
+      - dependencies
+      - module1
+    registries:
+      - github-maven
+
+  - package-ecosystem: maven
+    directory: '/module2'
+    schedule:
+      interval: weekly
+      day: sunday
+    commit-message:
+      prefix: chore
+      include: scope
+    labels:
+      - java
+      - maven
+      - dependencies
+      - module2
+    registries:
+      - github-maven
+
+  - package-ecosystem: maven
+    directory: '/module3'
+    schedule:
+      interval: weekly
+      day: sunday
+    commit-message:
+      prefix: chore
+      include: scope
+    labels:
+      - java
+      - maven
+      - dependencies
+      - module3
     registries:
       - github-maven
