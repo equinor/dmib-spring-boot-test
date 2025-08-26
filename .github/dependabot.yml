@@ -75,6 +75,10 @@ updates:
       - module1
     registries:
       - github-maven
+    groups:
+      module1-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: maven
     directory: '/module2'
@@ -91,6 +95,10 @@ updates:
       - module2
     registries:
       - github-maven
+    groups:
+      module2-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: maven
     directory: '/module3'
@@ -107,3 +115,7 @@ updates:
       - module3
     registries:
       - github-maven
+    groups:
+      module3-dependencies:
+        patterns:
+          - "*"
