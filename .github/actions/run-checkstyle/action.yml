@@ -51,7 +51,7 @@ runs:
           https://raw.githubusercontent.com/equinor/oilmod1-code-style/${{ inputs.branch }}/java/checkstyle/oilmod-checkstyle-xpath-suppressions.xml || exit 1
 
     - name: Run Checkstyle and report
-      uses: equinor/action-checkstyle@103e2e3ac7640d2b3de3df9b598744190cfec7df # v1.22.0
+      uses: equinor/action-checkstyle@8cf9c6f2656938f2a745dca3179929d14e7a5316 # v2.0.0
       with:
         reporter: ${{ inputs.reporter }}
         level: ${{ inputs.level }}
