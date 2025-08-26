@@ -9,8 +9,7 @@ on:
     branches: [ "main", "develop" ]
 
 # only allow minimum required permissions at top-level
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   dependency-review:
