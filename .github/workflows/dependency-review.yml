@@ -1,0 +1,32 @@
+# Dependency Review Action
+#
+# This workflow scans pull requests for dependency changes
+# and raises security alerts for vulnerable dependencies
+name: 'Dependency Review'
+
+on:
+  pull_request:
+    branches: [ "main", "develop" ]
+
+# only allow minimum required permissions at top-level
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          # Possible values: critical, high, moderate, low
+          fail-on-severity: critical
+          
+          # Comment on PRs with security failures
+          comment-summary-in-pr: true
