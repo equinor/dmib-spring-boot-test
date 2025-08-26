@@ -16,10 +16,25 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
+      contents: write  # Required for the dependency submission action
 
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0  # Fetch all history to ensure proper dependency comparisons
+      
+      - name: Setup Maven
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+          
+      - name: Submit Dependency Snapshot
+        uses: advanced-security/maven-dependency-submission-action@v3
+        with:
+          maven-args: "-f pom.xml"
       
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
