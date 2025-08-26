@@ -8,8 +8,7 @@ concurrency:
   cancel-in-progress: true
 
 # only allow minimum required permissions at top-level
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
 
