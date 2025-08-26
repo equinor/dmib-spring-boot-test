@@ -53,12 +53,9 @@ updates:
     registries:
       - github-maven
     groups:
-      parent-dependencies:
+      parent-pom-dependencies:
         patterns:
           - "*"
-        exclude-patterns:
-          # Exclude any module-specific dependencies that might be declared in parent
-          - "com.example.module*"
 
   - package-ecosystem: maven
     directory: '/module1'
