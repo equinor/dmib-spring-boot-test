@@ -53,7 +53,7 @@ updates:
     registries:
       - github-maven
     groups:
-      maven-deps:
+      parent-pom-maven-deps:
         patterns:
           - "*"
 
@@ -73,7 +73,7 @@ updates:
     registries:
       - github-maven
     groups:
-      maven-deps:
+      module1-maven-deps:
         patterns:
           - "*"
 
@@ -93,7 +93,7 @@ updates:
     registries:
       - github-maven
     groups:
-      maven-deps:
+      module2-maven-deps:
         patterns:
           - "*"
 
@@ -113,6 +113,6 @@ updates:
     registries:
       - github-maven
     groups:
-      maven-deps:
+      module3-maven-deps:
         patterns:
           - "*"
