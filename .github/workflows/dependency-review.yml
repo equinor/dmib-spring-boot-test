@@ -2,48 +2,41 @@
 #
 # This workflow scans pull requests for dependency changes
 # and raises security alerts for vulnerable dependencies
+#
+# When started in manual mode it will check the entire history
+
 name: 'Dependency Review'
+on: [ pull_request, workflow_dispatch ]
 
-on:
-  pull_request:
-    branches: [ "main", "develop" ]
-
-# only allow minimum required permissions at top-level
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   dependency-review:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: write  # Required for the dependency submission action
-
     steps:
-      - name: Checkout
+      - name: 'Checkout Repository'
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0  # Fetch all history to ensure proper dependency comparisons
-      
-      - name: Setup Maven
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'maven'
-
-      - name: Make Maven wrapper executable
-        run: chmod +x ./mvnw
-
-      - name: Submit Dependency Snapshot
-        uses: advanced-security/maven-dependency-submission-action@v3
-        with:
-          maven-args: "-f pom.xml"
-      
-      - name: Dependency Review
+          fetch-depth: 0
+      - name: "Get the first commit SHA"
+        if: github.event_name == 'workflow_dispatch'
+        id: first-commit
+        run: echo "first_commit_sha=$(git rev-list --max-parents=0 HEAD)" >> $GITHUB_ENV
+      - name: 'Dependency Review (manual)'
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/dependency-review-action@v4
         with:
-          # Possible values: critical, high, moderate, low
-          fail-on-severity: critical
-          
-          # Comment on PRs with security failures
-          comment-summary-in-pr: true
+          base-ref: ${{ env.first_commit_sha }}
+          head-ref: ${{ github.ref }}
+          show-openssf-scorecard: true
+          vulnerability-check: true
+          license-check: true
+          warn-only: true
+      - name: 'Dependency Review (pull_request)'
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+        with:
+          show-openssf-scorecard: true
+          vulnerability-check: true
+          license-check: true
