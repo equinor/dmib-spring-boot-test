@@ -17,9 +17,8 @@ on:
   schedule:
     - cron: '0 0 * * 0'  # Weekly on Sundays at midnight
 
-# Sets minimal permissions by default
-permissions:
-  contents: read
+# only allow minimum required permissions at top-level
+permissions: {}
 
 jobs:
   dependency-submission:

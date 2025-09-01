@@ -7,14 +7,16 @@ concurrency:
   group: ${{ github.ref }}-ci-checkstyle
   cancel-in-progress: true
 
-permissions:
-  contents: read
+# only allow minimum required permissions at top-level
+permissions: {}
 
 jobs:
 
   checkstyle-runner:
     timeout-minutes: 10
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
